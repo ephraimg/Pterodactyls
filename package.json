@@ -3,9 +3,6 @@
   "description": "> Pithy project description",
   "author": "Vinoj Govinthasamy, Ephraim Glick, Rithnarin Kong",
   "license": "ISC",
-  "engines": {
-    "node": "6.x"
-  },
   "scripts": {
     "dev": "webpack -d --watch",
     "build": "webpack -p",
