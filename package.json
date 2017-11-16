@@ -4,7 +4,7 @@
   "author": "Vinoj Govinthasamy, Ephraim Glick, Rithnarin Kong",
   "license": "ISC",
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=3.10.10"
   },
   "scripts": {
     "dev": "webpack -d --watch",
