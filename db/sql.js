@@ -6,10 +6,14 @@ require('dotenv').config();
 const Promise = require('bluebird');
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  user: process.env.SQL_USERNAME,
-  password: process.env.SQL_PASSWORD
-});
+// below for dev environment
+// const connection = mysql.createConnection({
+//   user: process.env.SQL_USERNAME,
+//   password: process.env.SQL_PASSWORD
+// });
+
+// below for deployment environment
+const connection = mysql.createConnection(CLEARDB_DATABASE_URL);
 
 const db = Promise.promisifyAll(connection);
 
