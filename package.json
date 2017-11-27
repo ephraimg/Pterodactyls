@@ -38,7 +38,9 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "react": "^16.1.1",
-    "react-dom": "^16.1.1"
+    "react-dom": "^16.1.1",
+    "express": "^4.16.2",
+    "faker": "^4.1.0"
   },
   "devDependencies": {
     "webpack": "^3.8.1",
@@ -50,8 +52,6 @@
     "babel-register": "^6.7.2",
     "dotenv": "^4.0.0",
     "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor.git",
-    "express": "^4.16.2",
-    "faker": "^4.1.0",
     "jsdoc": "^3.5.5",
     "npm-run-all": "^4.1.2"
   },
