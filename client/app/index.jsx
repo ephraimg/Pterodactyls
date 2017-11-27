@@ -73,7 +73,18 @@ class App extends React.Component {
   }
 
   search(query) {
-    let data = this.state.frontPosts.filter(item => item.title.toLowerCase().search(query) !== -1 || item.author.toLowerCase().search(query) !== -1);
+    let data = this.state.frontPosts.filter(item => {
+      if (item.title) {
+        return item.title.toLowerCase().search(query) !== -1;
+      }
+      if (item.google_name) {
+        return item.google_name.toLowerCase().search(query) !== -1;
+      }
+      if (item.author) {
+        return item.author.toLowerCase().search(query) !== -1;
+      }
+    });
+
     this.setState({
       filteredItems: data,
       filtered: true

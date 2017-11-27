@@ -156,7 +156,7 @@ searchAllPosts = (query) => {
 };
 
 
-/** 
+/**
   * This function retrieves a text body from mongoDB for each of the posts retrieved from mySQL.
   * @func getMongoTextsForSqlResults
   * @param {array} sqlResults - An array of posts retrieved from the mySQL database.
@@ -170,7 +170,7 @@ getMongoTextsForSqlResults = sqlResults => {
   return Promise.all(mongoTexts);
 };
 
-/** 
+/**
   * This function combines text bodies with the rest of the posts (objects containing other post properties).
   * @func addMongoTextsToSqlResults
   * @param {array} sqlPosts - An array of posts retrieved from the mySQL database.
@@ -185,7 +185,7 @@ addMongoTextsToSqlResults = (sqlPosts, mongoTexts) => {
   return sqlPosts;
 };
 
-/** 
+/**
   * This function saves a Google user profile to the mySQL user table.
   * @func saveGoogleUser
   * @param {array} googleProfile - An object containing a Google user's profile information.
