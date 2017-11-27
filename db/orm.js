@@ -8,14 +8,16 @@ const mongo = require('./mongo.js');
 const Sequelize = require('sequelize');
 
 
-let db = new Sequelize('kuyikSQL',
-  process.env.SQL_USERNAME,
-  process.env.SQL_PASSWORD,
-  {
-    host: process.env.SQL_HOST,
-    dialect: 'mysql'
-  }
-);
+let db = new Sequelize(process.env.CLEARDB_DATABASE_URL, {});
+
+// let db = new Sequelize('kuyikSQL',
+//   process.env.SQL_USERNAME,
+//   process.env.SQL_PASSWORD,
+//   {
+//     host: process.env.SQL_HOST,
+//     dialect: 'mysql'
+//   }
+// );
 
 // check if the connection is working
 db.authenticate()
