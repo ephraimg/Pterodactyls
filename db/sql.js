@@ -21,5 +21,5 @@ connection.connectAsync()
   .then(() => console.log('mySQL is now connected'))
   // .then(() => db.queryAsync('CREATE DATABASE kuyikSQL'))
   .catch(err => {}) // ignore error caused when db already exists
-  .then(() => db.queryAsync('USE kuyikSQL'))
-  .then(() => console.log('mySQL is using the kuyikSQL database'));
+  // .then(() => db.queryAsync('USE kuyikSQL'))
+  // .then(() => console.log('mySQL is using the kuyikSQL database'));
