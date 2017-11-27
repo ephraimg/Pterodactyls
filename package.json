@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
-<<<<<<< HEAD
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-react": "^6.24.1",
@@ -35,13 +34,11 @@
     "react-dom": "^16.1.1",
     "react-modal": "^3.1.4",
     "sequelize": "^4.22.6",
-    "webpack": "^3.8.1"
-=======
+    "webpack": "^3.8.1",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "react": "^16.1.1",
     "react-dom": "^16.1.1"
->>>>>>> Relocated dependencies to dev-dependencies
   },
   "devDependencies": {
     "webpack": "^3.8.1",
