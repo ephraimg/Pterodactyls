@@ -4,7 +4,7 @@
 
 const mongoose = require('mongoose');
 const faker = require('faker');
-const mongoUri = 'mongodb://localhost/kuyikMongo';
+const mongoUri = process.env.MONGODB_URI;
 mongoose.Promise = global.Promise;
 
 mongoose.connect(mongoUri, { useMongoClient: true });
