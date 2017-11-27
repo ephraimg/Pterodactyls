@@ -57,6 +57,7 @@ function saveSQLUsers() {
   var users = [];
   for (var i = 0; i < 15; i++) {
     let userEntry = {
+      id: i + 1,
       username: faker.internet.userName(),
       email: faker.internet.email(),
       about_me: faker.lorem.paragraph(), // eslint-disable-line camelcase
@@ -81,6 +82,7 @@ function saveSQLLocations() {
   var locations = [];
   for (var i = 0; i < 15; i++) {
     let locationEntry = {
+      id: i + 1,
       location: faker.address.city() + ', ' + faker.address.country()
     };
     locations.push(orm.Locations.create(locationEntry));
@@ -100,6 +102,7 @@ function saveSQLPosts() {
   for (var i = 0; i < 15; i++) {
     let mongoId = mongoIds[i];
     let postsEntry = {
+      id: i + 1,
       id_users: 1 + Math.floor(Math.random() * 15), // eslint-disable-line camelcase
       title: faker.lorem.words(6),
       subtitle: faker.lorem.sentence(),
