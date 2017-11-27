@@ -13,7 +13,7 @@ const mysql = require('mysql');
 // });
 
 // below for deployment environment
-const connection = mysql.createConnection(CLEARDB_DATABASE_URL);
+const connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
 
 const db = Promise.promisifyAll(connection);
 
