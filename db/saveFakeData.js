@@ -18,7 +18,7 @@ mongo.init()
   // create the database and tables
   .then(() => orm.Users.sync())
   .then(() => orm.Locations.sync())
-  .then(() => orm.Sessions.sync())
+  // .then(() => orm.Sessions.sync())
   .then(() => orm.Posts.sync())
   .then(() => {
     return mongo.Post.remove({}).exec();
@@ -65,7 +65,10 @@ function saveSQLUsers() {
     users.push(orm.Users.create(userEntry));
   }
   Promise.all(users)
-    .then(users => saveSQLLocations())
+    .then(users => {
+      console.log(JSON.stringify(users, null, 2));
+      return saveSQLLocations();
+    })
     .catch(err => console.log('Error saving locations: ', err));
 }
 
