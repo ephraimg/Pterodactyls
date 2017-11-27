@@ -1,6 +1,5 @@
 .DS_Store
 .env
-client/public/bundle.js
 
 ### node etc ###
 
