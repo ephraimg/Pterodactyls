@@ -13,7 +13,7 @@ var mongo = require('./mongo.js');
 let mongoIds = [];
 
 // create the database and tables
-orm.db.sync()
+orm.db.sync({force: true})
   .then(() => orm.Users.sync())
   .then(() => orm.Locations.sync())
   .then(() => orm.Sessions.sync())

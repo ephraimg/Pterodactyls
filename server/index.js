@@ -10,7 +10,7 @@ const db = require('../db/orm.js');
 const mongo = require('../db/mongo.js');
 
 // comment out if db already populated
-require('../db/saveFakeData.js');
+// require('../db/saveFakeData.js');
 
 let app = express();
 
