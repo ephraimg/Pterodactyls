@@ -49,11 +49,11 @@ passport.use(new GoogleStrategy(
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: '/auth/google/callback'
-  }, 
+  },
   verifyCallback
 ));
 
-/** 
+/**
   * This is the "verify callback" we use with OAuth2 and Google. See Passport docs for more info: <a href="http://www.passportjs.org/docs/authenticate/">http://www.passportjs.org/docs/authenticate/</a>.
   * @func verifyCallback
   * @param {string} accessToken
@@ -64,9 +64,9 @@ passport.use(new GoogleStrategy(
 function verifyCallback(accessToken, refreshToken, profile, done) {
   return db.Users.findOne({where: {google_id: profile.id} }) // eslint-disable-line camelcase
     .then(user => {
-      if (user) { 
-        return done(null, user); 
-      } else { 
+      if (user) {
+        return done(null, user);
+      } else {
         db.saveGoogleUser(profile)
           .then(user => done(null, user));
       }
@@ -75,7 +75,7 @@ function verifyCallback(accessToken, refreshToken, profile, done) {
 }
 
 // using Google auth requires these two routes
-/* 
+/*
 This function is required for OAuth2 with Google. Sign-in requests are directed to this endpoint for processing by Google, after which Google redirects the request to the callback endpoint with the logged in user (if the login was successful).
 */
 app.get('/auth/google',
@@ -145,7 +145,7 @@ app.post('/posts', (req, res) => {
     title: req.body.title,
     subtitle: req.body.subtitle,
     id_locations: 99999, // eslint-disable-line camelcase
-    // pics: req.body.pics,
+    pics: req.body.pics,
     // create mongo text id below...
     id_mongo_text: '' // eslint-disable-line camelcase
   };
@@ -175,6 +175,9 @@ app.post('/posts', (req, res) => {
     .then(savedText => {
       newPost.id_mongo_text = savedText['_id'].toString(); // eslint-disable-line camelcase
       db.Posts.create(newPost);
+    })
+    .then(() => {
+      res.redirect('/');
     });
 });
 
@@ -212,7 +215,7 @@ app.post('/image', function(req, res) {
     // HERE IS THE LINK THAT NEEDS TO BE STORED IN THE DB WITH THE POST
     console.log(result.data.data.link)
     res.status(201)
-    res.send('Uploaded');
+    res.send(result.data.data.link);
   })
   .catch((error) => {
     console.log('Image post error')

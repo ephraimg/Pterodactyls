@@ -27,7 +27,7 @@ class NavBar extends React.Component {
     return (<nav className='navbar navbar-inverse navbar-fixed-top app-navbar'>
       <div className="container">
         <div className="navbar-header">
-          <a href="#" onClick={() => this.props.changeView('home')} className="navbar-brand">KuYiK</a>
+          <a href="/" onClick={() => this.props.changeView('home')} className="navbar-brand">KuYiK</a>
         </div>
         <ul className="nav navbar-nav navbar-right m-r-0 hidden-xs">
           <li>

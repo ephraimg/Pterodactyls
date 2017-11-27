@@ -105,7 +105,10 @@ class App extends React.Component {
         filtered={this.state.filtered} />;
     } else if (view === 'create') {
       if (this.state.user.google_id) {
-        return <PostingPage user={this.state.user}/>;
+        return <PostingPage
+          user={this.state.user}
+          loadHome={this.loadHome}
+          changeView={this.changeView} />;
       } else {
         this.setState({
           view: 'home'

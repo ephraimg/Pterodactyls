@@ -18,8 +18,17 @@ class UploadImage extends React.Component {
     axios.post('/image', {
       imageUrl: this.state.imagePreviewUrl
     })
-    .then(function (response) {
-      console.log(response);
+    .then(response => {
+      return this.props.getImageUrl(response.data);
+    })
+    .then(() => {
+      return this.props.handleSubmit();
+    })
+    .then(() => {
+      return Promise.resolve(this.props.changeView('home'));
+    })
+    .then(() => {
+      return Promise.resolve(this.props.loadHome());
     })
     .catch(function (error) {
       console.log(error);
@@ -51,12 +60,14 @@ class UploadImage extends React.Component {
 
     return (
       <div>
-        Upload Image
         <form onSubmit={this._handleSubmit}>
           <input type="file" onChange={this._handleImageChange} />
-          <button type="submit" onClick={this._handleSubmit}>Upload Image</button>
         </form>
         {$imagePreview}
+        <hr></hr>
+        <a href='/'>
+          <button className="btn btn-default" onClick={this._handleSubmit}>Submit</button>
+        </a>
       </div>
     )
   }
@@ -64,4 +75,3 @@ class UploadImage extends React.Component {
 }
 
 export default UploadImage;
-

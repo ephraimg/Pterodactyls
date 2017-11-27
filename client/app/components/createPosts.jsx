@@ -20,10 +20,12 @@ class PostingPage extends React.Component {
       locationInputText: '',
       titleInputText: '',
       subtitleInputText: '',
-      mainInputText: ''
+      mainInputText: '',
+      imageUrl: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.getImageUrl = this.getImageUrl.bind(this);
   }
 
   handleChange(e) {
@@ -39,10 +41,17 @@ class PostingPage extends React.Component {
       location: this.state.locationInputText,
       title: this.state.titleInputText,
       subtitle: this.state.subtitleInputText,
-      main: this.state.mainInputText
+      main: this.state.mainInputText,
+      pics: this.state.imageUrl
     };
     console.log(newPost);
     axios.post('/posts', newPost);
+  }
+
+  getImageUrl(url) {
+    this.setState({
+      imageUrl: url
+    });
   }
 
   render() {
@@ -82,13 +91,13 @@ class PostingPage extends React.Component {
                 onChange={e => this.handleChange(e)}>
               </textarea>
             </form>
-            <form>
-              <footer className="screen-login">
-                <UploadImage />
-              </footer>
-              <hr></hr>
-              <button className="btn btn-default" onClick={this.handleSubmit}>Submit</button>
-            </form>
+            <footer className="screen-login">
+              <UploadImage
+                getImageUrl={this.getImageUrl}
+                handleSubmit={this.handleSubmit}
+                loadHome={this.props.loadHome}
+                changeView={this.props.changeView} />
+            </footer>
           </div>
         </div>
       </div>
