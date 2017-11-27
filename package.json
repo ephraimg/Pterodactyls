@@ -12,7 +12,8 @@
     "stop-mysql": "mysql.server stop",
     "stop-mongo": "mongo admin --eval \"db.shutdownServer()\"",
     "pomander": "curl -s https://raw.githubusercontent.com/hackreactor-labs/pomander/master/bin/install | bash",
-    "start": "npm-run-all --parallel start-mysql start-mongo start-node",
+    "start-dev": "npm-run-all --parallel start-mysql start-mongo start-node",
+    "start": "node server/index.js",
     "stop": "npm-run-all --serial stop-mysql stop-mongo"
   },
   "dependencies": {
