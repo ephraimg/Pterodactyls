@@ -11,7 +11,7 @@ const mongo = require('../db/mongo.js');
 var axios = require('axios');
 
 // comment out if db already populated
-require('../db/saveFakeData.js');
+// require('../db/saveFakeData.js');
 
 let app = express();
 
