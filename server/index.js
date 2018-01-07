@@ -6,22 +6,24 @@ require('dotenv').config();
 const express = require('express');
 const Sequelize = require('sequelize');
 const bodyParser = require('body-parser');
-const db = require('../db/orm.js');
+const orm = require('../db/orm.js');
 const mongo = require('../db/mongo.js');
-var axios = require('axios');
+const data = require('../db/saveFakeData.js');
+const dbHelpers = require('../db/dbHelpers.js');
+const axios = require('axios');
 
-// comment out if db already populated
-require('../db/saveFakeData.js');
 
-let app = express();
+// Seed database if needed
+if (process.env.SEEDED === '0') { data.seed(); }
+
+const app = express();
 
 app.use(express.static(__dirname + '/../client'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-
-/////////// for auth /////////////
+/////////// For auth /////////////
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
@@ -38,7 +40,7 @@ passport.serializeUser(function(user, done) {
   done(null, user.google_id);
 });
 passport.deserializeUser(function(googleId, done) {
-  db.Users.find({where: {google_id: googleId} }) // eslint-disable-line camelcase
+  orm.Users.find({where: {google_id: googleId} }) // eslint-disable-line camelcase
     .then(user => done(null, user))
     .catch(err => done(err, null));
 });
@@ -62,12 +64,12 @@ passport.use(new GoogleStrategy(
   * @param {done} function
 */
 function verifyCallback(accessToken, refreshToken, profile, done) {
-  return db.Users.findOne({where: {google_id: profile.id} }) // eslint-disable-line camelcase
+  return orm.Users.findOne({where: {google_id: profile.id} }) // eslint-disable-line camelcase
     .then(user => {
       if (user) {
         return done(null, user);
       } else {
-        db.saveGoogleUser(profile)
+        dbHelpers.saveGoogleUser(profile)
           .then(user => done(null, user));
       }
     })
@@ -95,30 +97,33 @@ app.get('/auth/google/callback',
 app.get('/home', (req, res) => {
   let sqlPosts = []; // need this external variable!!
   let user = {};
-  db.searchFrontPosts() // get posts from sql for the home page
+  dbHelpers.searchFrontPosts() // get posts from sql for the home page
     .then(results => {
       sqlPosts = results; // set external variable
-      return db.getMongoTextsForSqlResults(sqlPosts);
+      return dbHelpers.getMongoTextsForSqlResults(sqlPosts);
     })
     .then(results => {
       let mongoTexts = {}; // transform results into easier-to-use form
       results.forEach(record => mongoTexts[record._id] = record.text);
       // If user is logged in, send the user info back to the client
       if (req.isAuthenticated()) { user = req.user; }
-      res.send({user: user, posts: db.addMongoTextsToSqlResults(sqlPosts, mongoTexts)});
+      res.send({
+        user: user, 
+        posts: dbHelpers.addMongoTextsToSqlResults(sqlPosts, mongoTexts)
+      });
     })
     .catch(err => console.log('GET /home error:', err));
 });
 
 app.get('/search', (req, res) => {
   let sqlPosts = [];
-  db.searchAllPosts(req.query.search)
+  dbHelpers.searchAllPosts(req.query.search)
     .then(posts => {
       sqlPosts = posts; // set external variable
-      return db.getMongoTextsForSqlResults(sqlPosts);
+      return dbHelpers.getMongoTextsForSqlResults(sqlPosts);
     })
     .then(results => { // use external variable --v
-      return db.addMongoTextsToSqlResults(sqlPosts, results);
+      return dbHelpers.addMongoTextsToSqlResults(sqlPosts, results);
     })
     .then(allPosts => {
       let filteredPosts = [];
@@ -132,13 +137,11 @@ app.get('/search', (req, res) => {
       res.send(filteredPosts);
     })
     .catch(err => console.log('GET /search error:', err));
-  console.log(req.query.search);
-
 });
 
 app.post('/posts', (req, res) => {
-  console.log('req.body is: ', req.body);
-  console.log('req.user is:', req.user);
+  // console.log('req.body is: ', req.body);
+  // console.log('req.user is:', req.user);
   let newPost = {
     // find or create user id below...
     id_users: 99999, // eslint-disable-line camelcase
@@ -149,7 +152,7 @@ app.post('/posts', (req, res) => {
     // create mongo text id below...
     id_mongo_text: '' // eslint-disable-line camelcase
   };
-  db.Users.findOrCreate({
+  orm.Users.findOrCreate({
     where: {id: req.user.id},
     defaults: {
       google_name: req.user.google_name, // eslint-disable-line camelcase
@@ -158,15 +161,16 @@ app.post('/posts', (req, res) => {
     }
   })
     .spread((user, created) => {
-      console.log('user from db: ', user);
+      // console.log('user from db: ', user);
       newPost.id_users = user.get('id'); // eslint-disable-line camelcase
     })
-    .then(() => {
-      return db.Locations.findOrCreate({where: {location: req.body.location}})
-        .spread((loc, created) => {
-          console.log('loc from db: ', loc.get('id'));
-          newPost.id_locations = loc.get('id'); // eslint-disable-line camelcase
-        });
+    .then(() => orm.Locations.findOrCreate({
+      where: {location: req.body.location}
+    }))
+    .spread((loc, created) => {
+      // console.log('loc from db: ', loc.get('id'));
+      newPost.id_locations = loc.get('id'); // eslint-disable-line camelcase
+      Promise.resolve(true);
     })
     .then(() => {
       let mongoText = new mongo.Post({text: req.body.main});
@@ -174,11 +178,9 @@ app.post('/posts', (req, res) => {
     })
     .then(savedText => {
       newPost.id_mongo_text = savedText['_id'].toString(); // eslint-disable-line camelcase
-      db.Posts.create(newPost);
+      orm.Posts.create(newPost);
     })
-    .then(() => {
-      res.redirect('/');
-    });
+    .then(() => res.redirect('/'));
 });
 
 // logout route added to work with passport
@@ -194,34 +196,23 @@ app.get('/signout', function (req, res) {
 
 // Uploading image to Imgur API
 app.post('/image', function(req, res) {
-
-  var temp = req.body.imageUrl.split(',')
-  var image = temp[1]
-
-  var form = {
-    'image': image
-  }
-
+  const temp = req.body.imageUrl.split(',');
+  const image = temp[1];
+  const form = { 'image': image };
   const config = {
     baseURL: 'https://api.imgur.com',
-    headers: {
-      'Authorization': 'Client-ID ' + process.env.IMGUR_CLIENT_ID
-    }
-  }
-
-  axios.post('/3/image', form, config)
-  .then((result) => {
-    console.log('Image post success')
-    // HERE IS THE LINK THAT NEEDS TO BE STORED IN THE DB WITH THE POST
-    console.log(result.data.data.link)
-    res.status(201)
-    res.send(result.data.data.link);
-  })
-  .catch((error) => {
-    console.log('Image post error')
-    console.log(error)
-  })
-
+    headers: { 'Authorization': `Client-ID ${process.env.IMGUR_CLIENT_ID}` }
+  };
+  // Send to Imgur
+  return axios.post('/3/image', form, config)
+    .then(result => {
+      console.log('Image post success');
+      // HERE IS THE LINK THAT NEEDS TO BE STORED IN THE DB WITH THE POST
+      console.log(result.data.data.link);
+      res.status(201);
+      return res.send(result.data.data.link);
+    })
+    .catch(error => console.log('Image post error', error));
 });
 
 app.listen(process.env.PORT, () => {

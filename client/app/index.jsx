@@ -104,7 +104,6 @@ class App extends React.Component {
   }
 
   renderView() {
-    console.log('Current user is: ', this.state.user);
     const {view} = this.state;
 
     if (view === 'home') {

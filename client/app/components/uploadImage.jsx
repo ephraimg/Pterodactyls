@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 class UploadImage extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -14,41 +15,25 @@ class UploadImage extends React.Component {
 
   _handleSubmit(e) {
     e.preventDefault();
-
-    axios.post('/image', {
-      imageUrl: this.state.imagePreviewUrl
-    })
-    .then(response => {
-      return this.props.getImageUrl(response.data);
-    })
-    .then(() => {
-      return this.props.handleSubmit();
-    })
-    .then(() => {
-      return Promise.resolve(this.props.changeView('home'));
-    })
-    .then(() => {
-      return Promise.resolve(this.props.loadHome());
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    return axios.post('/image', { imageUrl: this.state.imagePreviewUrl })
+      .then(response => this.props.getImageUrl(response.data))
+      .then(() => this.props.handleSubmit())
+      .then(() => Promise.resolve(this.props.changeView('home')))
+      .then(() => Promise.resolve(this.props.loadHome()))
+      .catch(error => console.log(error));
   }
 
   _handleImageChange(e) {
     e.preventDefault();
-
     let reader = new FileReader();
     let file = e.target.files[0];
-
     reader.onloadend = () => {
       this.setState({
         file: file,
         imagePreviewUrl: reader.result
       });
-    }
-
-    reader.readAsDataURL(file)
+    };
+    reader.readAsDataURL(file);
   }
 
   render() {
@@ -57,7 +42,6 @@ class UploadImage extends React.Component {
     if (imagePreviewUrl) {
       $imagePreview = (<img src={imagePreviewUrl} />);
     }
-
     return (
       <div>
         <form onSubmit={this._handleSubmit}>
@@ -66,10 +50,14 @@ class UploadImage extends React.Component {
         {$imagePreview}
         <hr></hr>
         <a href='/'>
-          <button className="btn btn-default" onClick={this._handleSubmit}>Submit</button>
+          <button 
+            className="btn btn-default" 
+            onClick={this._handleSubmit}>
+          Submit
+          </button>
         </a>
       </div>
-    )
+    );
   }
 
 }

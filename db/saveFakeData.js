@@ -2,51 +2,65 @@
  * @fileOverview Uses faker package to populate databases with fake posts, users, and locations.
  */
 
-const faker = require('faker');
 var Promise = require('bluebird');
-// var mysql = require('mysql2');
-var orm = require('./orm.js');
-var mongo = require('./mongo.js');
+const faker = require('faker');
+const mysql = require('mysql');
+const orm = require('./orm.js');
+const mongo = require('./mongo.js');
 
-/* generate data for the sql database using faker */
-
+// Use this to allow access by save functions
 let mongoIds = [];
 
-mongo.init()
-  .then(() => orm.init())
-  .then(() => orm.db.sync({force: true}))
-  // create the database and tables
-  .then(() => orm.Users.sync())
-  .then(() => orm.Locations.sync())
-  // .then(() => orm.Sessions.sync())
-  .then(() => orm.Posts.sync())
-  .then(() => {
-    return mongo.Post.remove({}).exec();
-  })
-  .catch(err => console.log('Error syncing in saveFakeData.js', err))
-  .then(() => {
-    let fakePosts = [];
-    for (let i = 0; i < 15; i++) {
-      let fakePost = { text: faker.lorem.paragraphs(5) };
-      fakePost = new mongo.Post(fakePost);
-      fakePosts.push(fakePost.save());
-    }
-    return Promise.all(fakePosts);
-  })
-  .then(saved => {
-    return mongo.Post.find({}, '_id')
-      .lean();
-  })
-  .then(idRecords => {
-    mongoIds = idRecords.map(rec => rec._id.toString());
-    saveSQLUsers();
-  })
-  .catch(err => {
-    console.log('Error saving SQL', err);
-  });
+/* generate data for the sql database using faker */
+const seed = () => {
+  return createSQLdb()
+    .then(() => orm.Users.sync({force: true}))
+    .then(() => orm.Locations.sync({force: true}))
+    // .then(() => orm.Sessions.sync())
+    .then(() => orm.Posts.sync({force: true}))
+    .then(() => mongo.Post.remove({}).exec())
+    .catch(err => console.log('Error seeding data', err))
+    .then(() => {
+      let fakePosts = [];
+      for (let i = 0; i < 15; i++) {
+        let fakePost = { text: faker.lorem.paragraphs(5) };
+        fakePost = new mongo.Post(fakePost);
+        fakePosts.push(fakePost.save());
+      }
+      return Promise.all(fakePosts);
+    })
+    .then(saved => mongo.Post.find({}, '_id').lean())
+    .then(idRecords => {
+      mongoIds = idRecords.map(rec => rec._id.toString());
+      return saveSQLUsers();
+    })
+    .catch(err => {
+      console.log('Error saving SQL', err);
+    });
+};
 
+/**
+ * @fileOverview Connects server to mySQL, creates a kuyikSQL database, and uses that database.
+ */
 
-// save new fake records; using func declarations to hoist
+function createSQLdb() {
+  let connection;
+  if (process.env.LOCAL === '1') {
+    connection = mysql.createConnection({
+      user: process.env.SQL_USERNAME,
+      password: process.env.SQL_PASSWORD
+    }); 
+  } else {
+    connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
+  }
+  const db = Promise.promisifyAll(connection);
+  return connection.connectAsync()
+    .tap(() => console.log('mySQL is now connected'))
+    .then(() => db.queryAsync('CREATE DATABASE IF NOT EXISTS kuyikSQL'))
+    .catch(err => {}) // ignore error caused when db already exists
+    .then(() => db.queryAsync('USE kuyikSQL'))
+    .tap(() => console.log('mySQL is using the kuyikSQL database'));
+}
 
 
 /** 
@@ -65,11 +79,9 @@ function saveSQLUsers() {
     };
     users.push(orm.Users.create(userEntry));
   }
-  Promise.all(users)
-    .then(users => {
-      console.log(JSON.stringify(users, null, 2));
-      return saveSQLLocations();
-    })
+  return Promise.all(users)
+    .tap(users => console.log(JSON.stringify(users, null, 2)))
+    .then(users => saveSQLLocations())
     .catch(err => console.log('Error saving locations: ', err));
 }
 
@@ -87,7 +99,7 @@ function saveSQLLocations() {
     };
     locations.push(orm.Locations.create(locationEntry));
   }
-  Promise.all(locations)
+  return Promise.all(locations)
     .then(locations => saveSQLPosts())
     .catch(err => console.log('Error saving locations: ', err));
 }
@@ -112,7 +124,9 @@ function saveSQLPosts() {
     };
     posts.push(orm.Posts.create(postsEntry));
   }
-  Promise.all(posts)
-    .then(posts => console.log('Saved all fake posts...'))
+  return Promise.all(posts)
+    .tap(posts => console.log('Saved all fake posts...'))
     .catch(err => console.log(err));
 }
+
+module.exports.seed = seed;
