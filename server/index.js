@@ -196,6 +196,9 @@ app.get('/signout', function (req, res) {
 
 // Uploading image to Imgur API
 app.post('/image', function(req, res) {
+
+  console.log('Image URL: ', req.body.imageUrl);
+
   const temp = req.body.imageUrl.split(',');
   const image = temp[1];
   const form = { 'image': image };

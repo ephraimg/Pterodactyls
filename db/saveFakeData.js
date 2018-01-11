@@ -120,7 +120,7 @@ function saveSQLPosts() {
       subtitle: faker.lorem.sentence(),
       id_mongo_text: mongoId, // eslint-disable-line camelcase
       id_locations: 1 + Math.floor(Math.random() * 15), // eslint-disable-line camelcase
-      pics: faker.image.image()
+      pics: `../../images/${i}.jpg`
     };
     posts.push(orm.Posts.create(postsEntry));
   }
