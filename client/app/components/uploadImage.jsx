@@ -49,13 +49,11 @@ class UploadImage extends React.Component {
         </form>
         {$imagePreview}
         <hr></hr>
-        <a href='/'>
-          <button 
-            className="btn btn-default" 
-            onClick={this._handleSubmit}>
-          Submit
-          </button>
-        </a>
+        <button 
+          className="btn btn-default" 
+          onClick={this._handleSubmit}>
+        Submit
+        </button>
       </div>
     );
   }
