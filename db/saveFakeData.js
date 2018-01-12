@@ -56,7 +56,7 @@ function createSQLdb() {
   const db = Promise.promisifyAll(connection);
   return connection.connectAsync()
     .tap(() => console.log('mySQL is now connected'))
-    .then(() => db.queryAsync('DROP DATABASE kuyikSQL'))
+    .then(() => db.queryAsync('DROP DATABASE IF EXISTS kuyikSQL'))
     .then(() => db.queryAsync('CREATE DATABASE kuyikSQL'))
     .catch(err => {}) // ignore error caused when db already exists
     .then(() => db.queryAsync('USE kuyikSQL'))
