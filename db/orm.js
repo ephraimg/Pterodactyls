@@ -24,10 +24,10 @@ const orm = new Sequelize(...options);
 // check if the connection is working
 orm.authenticate()
   .then(() => {
-    console.log('Sequelize is connected to the kuyikSQL database');
+    console.log('Sequelize is connected to the mySQL database');
   })
   .catch(err => {
-    console.error('Unable to connect to the kuyikSQL database:', err);
+    console.error('Unable to connect to the mySQL database:', err);
   });
 
 
