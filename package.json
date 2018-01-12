@@ -15,8 +15,7 @@
     "start-dev": "npm-run-all --parallel start-mysql start-mongo start-node",
     "stop": "npm-run-all --serial stop-mysql stop-mongo",
     "pomander": "curl -s https://raw.githubusercontent.com/hackreactor-labs/pomander/master/bin/install | bash",
-    "start": "node server/index.js",
-    "postinstall": "npm run clean && npm run build"
+    "start": "node server/index.js"
   },
   "dependencies": {
     "axios": "^0.17.1",
