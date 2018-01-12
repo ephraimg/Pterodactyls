@@ -10,7 +10,7 @@ const Sequelize = require('sequelize');
 // set up the connection
 let options;
 if (process.env.LOCAL === '0') {
-  options = [ process.env.CLEARDB_DATABASE_URL, {} ];
+  options = [ process.env.JAWSDB_URL, {} ];
 } else {
   options = [
     'kuyikSQL', 

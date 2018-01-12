@@ -51,7 +51,7 @@ function createSQLdb() {
       password: process.env.SQL_PASSWORD
     }); 
   } else {
-    connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
+    connection = mysql.createConnection(process.env.JAWSDB_URL);
   }
   const db = Promise.promisifyAll(connection);
   return connection.connectAsync()
