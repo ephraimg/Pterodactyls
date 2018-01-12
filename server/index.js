@@ -19,8 +19,8 @@ if (process.env.SEEDED === '0') { data.seed(); }
 const app = express();
 
 app.use(express.static(__dirname + '/../client'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({strict: false, limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true, parameterLimit: 50000}));
 
 
 /////////// For auth /////////////
